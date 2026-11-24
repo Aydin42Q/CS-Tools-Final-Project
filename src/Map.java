@@ -1,10 +1,15 @@
+import java.util.ArrayList;
+
 public class Map {
     private Cell[][] map;
     
     private String mapName;
     private int mapLevel;
+    private int[] dimensions;
+
 
     public Map (int[] dimensions, String mapName, int mapLevel) {
+        this.dimensions = dimensions;
         map = new Cell[dimensions[0]][dimensions[1]];
         for (int i = 0; i < dimensions[0]; i++) {
             for (int j = 0; j < dimensions[1]; j++) {
@@ -20,44 +25,80 @@ public class Map {
 
     }
 
+    public int[] getDimensions() {
+        return dimensions;
+    }
+
     public void displayMap() {
         IO.println(mapName + ": Level " + mapLevel);
         for (Cell[] mapRow : map) {
             for (int j = 0; j < mapRow.length; j++) {
-                IO.print(mapRow[j].getCell());
+                IO.print(mapRow[j]);
             }
             IO.println();
         }
+    }
+
+    public Cell getCell(int[] position) {
+        return map[position[0]][position[1]];
     }
 
 
 
 
 
-    private class Cell {
-        private String[] state;
+    public class Cell {
+        private ArrayList<String> state = new ArrayList<>();
         private boolean isOccupied;
         
         private Cell (String[] state) {
-            this.state = state;
+            for (String s : state) {
+                this.state.add(s);
+            }
             isOccupied = false;
         }
 
-        private boolean getOccupied() {
+    
+
+        public boolean getOccupied() {
             return isOccupied;
         }
 
-        private String[] getState() {
-            return state;
+        public void setOccupied(boolean b) {
+            isOccupied = b;
         }
 
-        private String getCell() {
-            if (state[0].equals("border")) {
-                return "*";
-            } else if (state[0].equals("terrain")) {
-                return "O";
+        public void addState(String state) {
+            this.state.add(state);
+        }
+
+        public void removeState(String state) {
+            this.state.remove(state);
+        }
+
+        public String[] getState() {
+            return state.toArray(new String[0]);
+        }
+
+        public boolean isTraverseable() {
+            return !state.contains("inaccessible");
+        }
+
+        @Override
+        public String toString() {
+            if (!isOccupied) {
+                switch (state.get(0)) {
+                    case "border" -> {return "*";}
+                    case "terrain" -> {return "O";}
+                    default -> {return null;}
+                }
             } else {
-                return null;
+                switch (state.get(state.size() - 1)) {
+                    case "Player" -> {return "V";}
+                    case "Page" -> {return "P";}
+                    case "Knight" -> {return "N";}
+                    default -> throw new AssertionError();
+                }
             }
         }
     }
