@@ -4,10 +4,9 @@ import java.util.Random;
 public class Player extends Entity {
     
     public Player(Map map) {
-        int[] spawn = getSpawn(map);
-        super(spawn);
-        map.getCell(spawn).setOccupied(true);
-        map.getCell(spawn).addState("Player");
+        super(getSpawn(map));
+        map.getCell(super.getPosition()).setOccupied(true);
+        map.getCell(super.getPosition()).addState("Player");
         
     }
 
@@ -18,7 +17,16 @@ public class Player extends Entity {
 
         Random random = new Random();
         int row = (x/2) + random.nextInt(x - (x/2) - 1);
-        int col = (y/2) + random.nextInt(y - (y/2) - 1);
+        int col = 1 + random.nextInt(y - 2);
+        while (true) {
+            if (map.getCell(new int[]{row, col}).getOccupied() || 
+                !map.getCell(new int[]{row, col}).isTraverseable()) {
+                row = (x/2) + random.nextInt(x - (x/2) - 1);
+                col = 1 + random.nextInt(y - 2);
+            } else {
+                break;
+            }
+        }
 
         return new int[]{row, col};
     }

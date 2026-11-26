@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class GameController implements Runnable{
@@ -12,6 +13,14 @@ public class GameController implements Runnable{
          Map map = new Map(new int[]{10, 10}, "test", -1);
         map.displayMap();
         Player player = new Player(map);
+        ArrayList<Enemy> enemies = new ArrayList<>();
+        enemies.add(new Enemy.Page(map));
+        enemies.add(new Enemy.Knight(map));
+
+        for (Enemy enemy : enemies) {
+            IO.println(enemy.getClass().getSimpleName() + " spawned at " +
+                Arrays.toString(enemy.getPosition()));
+        }
         while (game) {
             map.displayMap();
             int[][] movelist = player.getAvailableMoves(map);
