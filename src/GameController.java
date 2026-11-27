@@ -20,10 +20,23 @@ public class GameController implements Runnable{
         for (Enemy enemy : enemies) {
             IO.println(enemy.getClass().getSimpleName() + " spawned at " +
                 Arrays.toString(enemy.getPosition()));
+
+            int[][] moves = enemy.getAvailableMoves(map);
+            
+            for (int[] move : moves) {
+                if (!map.getCell(move).getOccupied()) {
+                    map.getCell(move).addState("threatened");
+                }
+            }
         }
         while (game) {
-            map.displayMap();
             int[][] movelist = player.getAvailableMoves(map);
+            for (int[] move : movelist) {
+                if (!map.getCell(move).getOccupied()) {
+                    map.getCell(move).addState("move");
+                }
+            }
+            map.displayMap();
             IO.println("Enter Move From List") ;
             for (int[] i : movelist) {
                 for (int j : i) {
@@ -39,14 +52,66 @@ public class GameController implements Runnable{
             for (int i = 0; i < 2; i++) {
                 move[i] = Integer.parseInt(sMove[i]);
             }
+            for (Enemy enemy : enemies) {
+                int[][] moves = enemy.getAvailableMoves(map);
+                for (int[] m : moves) {
+                    map.getCell(m).removeState("threatened");
+                }
+                
+            }
+            boolean flag = false;
             for (int[] m : movelist) {
+                map.getCell(m).removeState("move");
                 if (Arrays.equals(m, move)) {
                     player.move(move, map);
-                    continue;
+                    flag = true;
+                    moveEnemies(enemies, map);
                 }
             }
-            IO.println("Enter a valid move");
+            if (!flag) {
+                IO.println("Enter a valid move");
+            }
 
+            for (Enemy enemy : enemies) {
+                int[][] moves = enemy.getAvailableMoves(map);
+                
+                for (int[] m : moves) {
+                    if (!map.getCell(m).getOccupied()) {
+                        map.getCell(m).addState("threatened");
+                    }
+                }
+            }
+            
+
+        }
+    }
+
+    public void moveEnemies(ArrayList<Enemy> enemies, Map map) {
+        
+        for (Enemy enemy : enemies) {
+            //if (enemy.getAttack(map) != null) {
+              //  enemy.move(enemy.getAttack(map), map);
+            //} else {
+                int[] playerPos = map.getPlayer();
+                int xDiff = 0;
+                int yDiff = 0;
+                int bestDistance = Integer.MAX_VALUE;
+                int[] bestMove = null;
+                for (int[] move : enemy.getAvailableMoves(map)){
+                    xDiff = Math.abs(move[0] - playerPos[0]);
+                    yDiff = Math.abs(move[1] - playerPos[1]);
+                    int distance = xDiff + yDiff;
+                    if (distance < bestDistance) {
+                        bestDistance = distance;
+                        bestMove = move;
+                    }
+
+                }
+                
+                if (bestMove != null) {
+                    enemy.move(bestMove, map);
+                }
+          //  }
         }
     }
     

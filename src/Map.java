@@ -43,7 +43,18 @@ public class Map {
         return map[position[0]][position[1]];
     }
 
-
+    public int[] getPlayer() {
+        for (int x = 0; x < dimensions[0]; x++) {
+            for (int y = 0; y < dimensions[1]; y++) {
+                for (String state : getCell(new int[]{x, y}).getState()) {
+                    if (state.equals("Player")) {
+                        return new int[]{x, y};
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
 
 
@@ -86,7 +97,11 @@ public class Map {
 
         @Override
         public String toString() {
-            if (!isOccupied) {
+            if (!isOccupied && state.indexOf("threatened") != -1) {
+                return "X";
+            } else if (!isOccupied && state.indexOf("move") != -1) {
+                return "+";
+            } else if (!isOccupied) {
                 switch (state.get(0)) {
                     case "border" -> {return "*";}
                     case "terrain" -> {return "O";}

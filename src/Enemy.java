@@ -30,6 +30,8 @@ public abstract class Enemy extends Entity {
         return new int[]{row, col};
     }
 
+    public abstract int[] getAttack(Map map);
+
     public static class Page extends Enemy {
 
         public Page(Map map) {
