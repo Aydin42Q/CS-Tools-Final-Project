@@ -91,7 +91,7 @@ The following features will not be implemented as part of the current project:
 ## Tech Stack
 
 ### Programming Language
-- **Java 21**
+- **Java 25**
 
 ### Libraries and Utilities
 - `java.util.Random` — Random number generation for future board layouts and enemy placement.
