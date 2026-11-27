@@ -102,7 +102,7 @@ The following features will not be implemented as part of the current project:
 ### Development Tools
 - Visual Studio Code with Java extensions
 - Git and GitHub for version control
-- Java Development Kit (JDK) 21
+- Java Development Kit (JDK) 25
 
 ### Data Storage
 - A two-dimensional array will represent the game board.
