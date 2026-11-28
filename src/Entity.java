@@ -15,6 +15,7 @@ public abstract class Entity {
     
     
     public abstract void move(int[] position, Map map);
+    public abstract void take(Entity entity, Map map);
     public abstract int[][] getAvailableMoves(Map map);
 
 }

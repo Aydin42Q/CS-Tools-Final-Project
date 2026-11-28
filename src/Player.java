@@ -2,7 +2,9 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class Player extends Entity {
-    
+    private int bodyDoubles = 3;
+    private boolean inCheck;
+
     public Player(Map map) {
         super(getSpawn(map));
         map.getCell(super.getPosition()).setOccupied(true);
@@ -39,6 +41,33 @@ public class Player extends Entity {
         map.getCell(position).setOccupied(true);
         map.getCell(position).addState("Player");
         super.setPosition(position);
+    }
+
+    @Override
+    public void take(Entity entity, Map map) {
+        if (super.getPosition() != null && entity instanceof Enemy enemy && enemy.getPosition() != null) {
+            int[] position = enemy.getPosition();
+            enemy.remove(map);
+            move(position, map);
+        }
+    }
+
+    public int getBodyDoubles() {
+        return bodyDoubles;
+    }
+
+    public boolean isInCheck() {
+        return inCheck;
+    }
+
+    public void setInCheck(boolean inCheck) {
+        this.inCheck = inCheck;
+    }
+
+    void loseBodyDouble(Map map) {
+        if (bodyDoubles > 0) {
+            bodyDoubles--;
+        }
     }
 
     @Override 

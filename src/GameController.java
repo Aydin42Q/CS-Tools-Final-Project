@@ -30,6 +30,13 @@ public class GameController implements Runnable{
             }
         }
         while (game) {
+            player.setInCheck(false);
+            for (Enemy enemy : enemies) {
+                if (enemy.getAttack(map) != null) {
+                    player.setInCheck(true);
+                    break;
+                }
+            }
             int[][] movelist = player.getAvailableMoves(map);
             for (int[] move : movelist) {
                 if (!map.getCell(move).getOccupied()) {
@@ -37,6 +44,10 @@ public class GameController implements Runnable{
                 }
             }
             map.displayMap();
+            IO.println("Body Doubles: " + player.getBodyDoubles());
+            if (player.isInCheck()) {
+                IO.println("You are in check!");
+            }
             IO.println("Enter Move From List") ;
             for (int[] i : movelist) {
                 for (int j : i) {
@@ -63,9 +74,22 @@ public class GameController implements Runnable{
             for (int[] m : movelist) {
                 map.getCell(m).removeState("move");
                 if (Arrays.equals(m, move)) {
-                    player.move(move, map);
+                    Enemy target = null;
+                    for (Enemy enemy : enemies) {
+                        if (Arrays.equals(enemy.getPosition(), move)) {
+                            target = enemy;
+                            break;
+                        }
+                    }
+                    if (target == null) {
+                        player.move(move, map);
+                    } else {
+                        player.take(target, map);
+                        enemies.remove(target);
+                        IO.println("You took a " + target.getClass().getSimpleName() + ".");
+                    }
                     flag = true;
-                    moveEnemies(enemies, map);
+                    moveEnemies(enemies, map, player);
                 }
             }
             if (!flag) {
@@ -86,12 +110,19 @@ public class GameController implements Runnable{
         }
     }
 
-    public void moveEnemies(ArrayList<Enemy> enemies, Map map) {
+    public void moveEnemies(ArrayList<Enemy> enemies, Map map, Player player) {
         
-        for (Enemy enemy : enemies) {
-            //if (enemy.getAttack(map) != null) {
-              //  enemy.move(enemy.getAttack(map), map);
-            //} else {
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+            if (enemy.getAttack(map) != null) {
+                int bodyDoubles = player.getBodyDoubles();
+                enemy.take(player, map);
+                if (player.getBodyDoubles() < bodyDoubles) {
+                    IO.println("You lost a body double to a " + enemy.getClass().getSimpleName() + ".");
+                }
+                enemies.remove(i);
+                i--;
+            } else {
                 int[] playerPos = map.getPlayer();
                 int xDiff = 0;
                 int yDiff = 0;
@@ -111,7 +142,7 @@ public class GameController implements Runnable{
                 if (bestMove != null) {
                     enemy.move(bestMove, map);
                 }
-          //  }
+            }
         }
     }
     

@@ -2,10 +2,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public abstract class Enemy extends Entity {
-    
+    private final String enemyType;
 
     public Enemy(Map map, String enemyType) {
         super(getSpawn(map));
+        this.enemyType = enemyType;
         map.getCell(super.getPosition()).setOccupied(true);
         map.getCell(super.getPosition()).addState(enemyType);
     }
@@ -28,6 +29,20 @@ public abstract class Enemy extends Entity {
             }
         }
         return new int[]{row, col};
+    }
+
+    @Override
+    public void take(Entity entity, Map map) {
+        if (super.getPosition() != null && entity instanceof Player player && player.getPosition() != null) {
+            player.loseBodyDouble(map);
+            remove(map);
+        }
+    }
+
+    void remove(Map map) {
+        map.getCell(super.getPosition()).setOccupied(false);
+        map.getCell(super.getPosition()).removeState(enemyType);
+        super.setPosition(null);
     }
 
     public abstract int[] getAttack(Map map);
